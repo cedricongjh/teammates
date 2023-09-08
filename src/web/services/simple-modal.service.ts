@@ -12,7 +12,7 @@ export interface SimpleModalOptions {
   confirmMessage?: string; // custom text message for confirm button
   cancelMessage?: string; // custom text message for cancel button
   onClosed?: () => void;
-  funPropss?: string;
+  funProadsdsapss?: string;
 }
 
 /**
