@@ -13,7 +13,6 @@ export interface SimpleModalOptions {
   cancelMessage?: string; // custom text message for cancel button
   onClosed?: () => void;
   funProp?: string;
-  dsadsa?: string;
 }
 
 /**
