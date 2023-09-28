@@ -71,6 +71,7 @@ dependencies {
     implementation("org.eclipse.jetty:jetty-webapp")
     implementation("org.eclipse.jetty:jetty-annotations")
     implementation("org.jsoup:jsoup:1.15.2")
+    implementation group: 'com.microsoft.playwright', name: 'playwright', version: '1.28.1'
 
     testAnnotationProcessor(testng)
 
@@ -600,6 +601,25 @@ task axeTests {
         }
     }
     axeTests.dependsOn "axeTestTry${id}"
+}
+
+task playwright(type: Test) {
+  description "Run Playwright tests"
+  group "Test"
+  useTestNG()
+  options.suites "src/e2e/resources/testng-playwright.xml"
+  options.outputDirectory = file("${buildDir}/reports/playwright")
+  options.useDefaultListeners = true
+  ignoreFailures = false
+  maxHeapSize = "1g"
+  reports.html.required = false
+  reports.junitXml.required = false
+  jvmArgs "-Xss2m", "-Dfile.encoding=UTF-8"
+  testLogging {
+    events "passed"
+  }
+  afterTest afterTestClosure
+  afterSuite checkTestNgFailureClosure
 }
 
 // COVERAGE TASKS
