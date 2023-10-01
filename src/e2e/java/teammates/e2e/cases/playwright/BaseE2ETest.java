@@ -24,7 +24,9 @@ import teammates.common.datatransfer.attributes.InstructorAttributes;
 import teammates.common.datatransfer.attributes.NotificationAttributes;
 import teammates.common.datatransfer.attributes.StudentAttributes;
 import teammates.common.exception.HttpRequestFailedException;
+import teammates.common.util.AppUrl;
 import teammates.e2e.util.BackDoor;
+import teammates.e2e.util.TestProperties;
 import teammates.test.BaseTestCaseWithDatabaseAccess;
 
 public abstract class BaseE2ETest extends BaseTestCaseWithDatabaseAccess {
@@ -61,6 +63,10 @@ public abstract class BaseE2ETest extends BaseTestCaseWithDatabaseAccess {
   @AfterMethod
   void closeContext() {
     context.close();
+  }
+
+  protected static AppUrl createFrontendUrl(String relativeUrl) {
+    return new AppUrl(TestProperties.TEAMMATES_FRONTEND_URL + relativeUrl);
   }
 
   AccountAttributes getAccount(String googleId) {

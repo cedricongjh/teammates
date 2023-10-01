@@ -11,13 +11,12 @@ public class LoginPage {
     }
 
     public void navigate() {
-        page.navigate("http://localhost:8080/devServerLogin?nextUrl=http://localhost:4200/web/instructor/home");
+        page.navigate("http://localhost:8080/devServerLogin");
     }
 
     public void loginToDevServer() {
         Locator emailInput = page.locator("#email");
-        emailInput.fill("ins@gmail.com");
+        emailInput.fill("app_admin");
         page.click("#btn-login");
-        page.pause();
     }
 }
