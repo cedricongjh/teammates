@@ -109,6 +109,10 @@ public class FeedbackSubmitPageE2ETest extends BaseE2ETest {
         String questionId = getFeedbackQuestion(question).getId();
         String recipient = "Team 2";
         FeedbackResponseAttributes response = getMcqResponse(questionId, recipient, false, "UI");
+        submitPage.fillMcqResponse(1, recipient, response);
+        submitPage.clickSubmitQuestionButton(1);
+
+        verifyPresentInDatabase(response);
         page.pause();
     }
 

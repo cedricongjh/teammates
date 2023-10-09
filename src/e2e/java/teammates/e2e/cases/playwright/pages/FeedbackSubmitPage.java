@@ -11,6 +11,7 @@ import java.util.List;
 
 import com.microsoft.playwright.Locator;
 import com.microsoft.playwright.Page;
+import com.microsoft.playwright.options.AriaRole;
 
 import teammates.common.datatransfer.FeedbackParticipantType;
 import teammates.common.datatransfer.attributes.CourseAttributes;
@@ -92,8 +93,13 @@ public class FeedbackSubmitPage extends BasePage {
         if (responseDetails.isOther()) {
 
         } else {
-            // List<Locator> optionTexts = 
+            getMcqOption(qnNumber, recipient, responseDetails.getAnswer()).click();
         }
+    }
+
+    public void clickSubmitQuestionButton(int qnNumber) {
+        page.locator("#btn-submit-qn-" + qnNumber).click();
+        waitForConfirmationModalAndClickOk();
     }
 
     private String getCourseId() {
@@ -234,11 +240,19 @@ public class FeedbackSubmitPage extends BasePage {
         return page.locator("#btn-submit");
     }
 
-    // private Locator getMcqSection(int qnNumber, String recipient) {
+    private Locator getMcqOption(int qnNumber, String recipient, String answer) {
+        return page.locator("#question-submission-form-qn-1")
+                    .getByRole(AriaRole.ROW, new Locator.GetByRoleOptions().setName(getResponseAriaLabel(recipient)))
+                    .locator("label").filter(new Locator.FilterOptions().setHasText(answer));
+}
 
-    // }
-
-    // private List<Locator> getMcqOptions(int qnNumber, String recipient) {
-
-    // }
+    private String getResponseAriaLabel(String recipient) {
+        if (recipient == "" || recipient == "%GENERAL%" || recipient == "Myself") {
+            return "Response";
+        }
+        if (recipient == "Unknown") {
+            return "Response for To-Be-Selected";
+        }
+        return "Response for " + recipient;
+        }
 }
