@@ -3,20 +3,14 @@ package teammates.e2e.cases.playwright.pages;
 import com.microsoft.playwright.Locator;
 import com.microsoft.playwright.Page;
 
-public class LoginPage {
-    private final Page page;
-
+public class LoginPage extends BasePage {
     public LoginPage(Page page) {
-        this.page = page;
+        super(page);
     }
 
-    public void navigate() {
-        page.navigate("http://localhost:8080/devServerLogin");
-    }
-
-    public void loginToDevServer() {
+    public void loginToDevServer(String email) {
         Locator emailInput = page.locator("#email");
-        emailInput.fill("app_admin");
+        emailInput.fill(email);
         page.click("#btn-login");
     }
 }

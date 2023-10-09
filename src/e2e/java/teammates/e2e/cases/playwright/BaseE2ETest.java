@@ -25,6 +25,7 @@ import teammates.common.datatransfer.attributes.NotificationAttributes;
 import teammates.common.datatransfer.attributes.StudentAttributes;
 import teammates.common.exception.HttpRequestFailedException;
 import teammates.common.util.AppUrl;
+import teammates.common.util.Const;
 import teammates.e2e.util.BackDoor;
 import teammates.e2e.util.TestProperties;
 import teammates.test.BaseTestCaseWithDatabaseAccess;
@@ -69,11 +70,25 @@ public abstract class BaseE2ETest extends BaseTestCaseWithDatabaseAccess {
     return new AppUrl(TestProperties.TEAMMATES_FRONTEND_URL + relativeUrl);
   }
 
+
+    protected static AppUrl createBackendUrl(String relativeUrl) {
+        return new AppUrl(TestProperties.TEAMMATES_BACKEND_URL + relativeUrl);
+    }
+
+    protected void logout() {
+        AppUrl url = createBackendUrl(Const.WebPageURIs.LOGOUT);
+        if (!TestProperties.TEAMMATES_FRONTEND_URL.equals(TestProperties.TEAMMATES_BACKEND_URL)) {
+            url = url.withParam("frontendUrl", TestProperties.TEAMMATES_FRONTEND_URL);
+        }
+
+        page.navigate(url.toAbsoluteString());
+    }
+
   AccountAttributes getAccount(String googleId) {
     return BACKDOOR.getAccount(googleId);
-}
+ }
 
-      @Override
+    @Override
     protected AccountAttributes getAccount(AccountAttributes account) {
         return getAccount(account.getGoogleId());
     }
