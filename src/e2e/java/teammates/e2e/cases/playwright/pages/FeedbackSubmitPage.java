@@ -8,6 +8,7 @@ import static org.junit.Assert.assertTrue;
 import java.time.Instant;
 import java.util.Collections;
 import java.util.List;
+import java.util.regex.Pattern;
 
 import com.microsoft.playwright.Locator;
 import com.microsoft.playwright.Page;
@@ -241,9 +242,12 @@ public class FeedbackSubmitPage extends BasePage {
     }
 
     private Locator getMcqOption(int qnNumber, String recipient, String answer) {
-        return page.locator("#question-submission-form-qn-1")
+        // regex is used here as setHasText does substring matching if a string is passed
+        String pattern = "^" + answer + "$";
+        Pattern regex = Pattern.compile(pattern);
+        return getQuestionForm(qnNumber)
                     .getByRole(AriaRole.ROW, new Locator.GetByRoleOptions().setName(getResponseAriaLabel(recipient)))
-                    .locator("label").filter(new Locator.FilterOptions().setHasText(answer));
+                    .locator("label").filter(new Locator.FilterOptions().setHasText(regex));
 }
 
     private String getResponseAriaLabel(String recipient) {

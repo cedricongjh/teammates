@@ -113,6 +113,22 @@ public class FeedbackSubmitPageE2ETest extends BaseE2ETest {
         submitPage.clickSubmitQuestionButton(1);
 
         verifyPresentInDatabase(response);
+
+        ______TS("can submit only one question");
+
+        response = getMcqResponse(questionId, recipient, false, "Algo");
+        submitPage.fillMcqResponse(1, recipient, response);
+
+        FeedbackQuestionAttributes question2 = testData.feedbackQuestions.get("qn2InGracePeriodSession");
+        String question2Id = getFeedbackQuestion(question2).getId();
+        FeedbackResponseAttributes response2 = getMcqResponse(question2Id, recipient, false, "Teammates Test");
+        submitPage.fillMcqResponse(2, recipient, response2);
+
+        submitPage.clickSubmitQuestionButton(1);
+        // Question 2 response should not be persisted as only question 1 is submitted
+        verifyAbsentInDatabase(response2);
+        verifyPresentInDatabase(response);
+
         page.pause();
     }
 
