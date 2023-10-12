@@ -12,6 +12,7 @@ import teammates.common.datatransfer.DataBundle;
 import teammates.common.datatransfer.attributes.CourseAttributes;
 import teammates.common.datatransfer.attributes.FeedbackQuestionAttributes;
 import teammates.common.datatransfer.attributes.FeedbackResponseAttributes;
+import teammates.common.datatransfer.attributes.FeedbackResponseCommentAttributes;
 import teammates.common.datatransfer.attributes.FeedbackSessionAttributes;
 import teammates.common.datatransfer.attributes.InstructorAttributes;
 import teammates.common.datatransfer.attributes.StudentAttributes;
@@ -129,6 +130,34 @@ public class FeedbackSubmitPageE2ETest extends BaseE2ETest {
         verifyAbsentInDatabase(response2);
         verifyPresentInDatabase(response);
 
+        ______TS("add comment");
+        String responseId = getFeedbackResponse(response).getId();
+        int qnToComment = 1;
+        String comment = "new comment";
+        // TODO: abstract out to generate expected comment for rich text
+        String expectedComment = "<p>" + comment + "</p>";
+        submitPage.addComment(qnToComment, recipient, comment);
+        submitPage.clickSubmitAllQuestionsButton();
+
+        verifyPresentInDatabase(response2);
+        submitPage.verifyComment(qnToComment, recipient, comment);
+        verifyPresentInDatabase(getFeedbackResponseComment(responseId, expectedComment));
+
+        ______TS("edit comment");
+        comment = "edited comment";
+        expectedComment = "<p>" + comment + "</p>";
+        submitPage.editComment(qnToComment, recipient, comment);
+        submitPage.clickSubmitAllQuestionsButton();
+
+        submitPage.verifyComment(qnToComment, recipient, comment);
+        verifyPresentInDatabase(getFeedbackResponseComment(responseId, expectedComment));
+
+        ______TS("delete comment");
+        submitPage.deleteComment(qnToComment, recipient);
+
+        submitPage.verifyStatusMessage("Your comment has been deleted!");
+        submitPage.verifyNoCommentPresent(qnToComment, recipient);
+        verifyAbsentInDatabase(getFeedbackResponseComment(responseId, comment));
         page.pause();
     }
 
@@ -175,6 +204,15 @@ public class FeedbackSubmitPageE2ETest extends BaseE2ETest {
         }
         return FeedbackResponseAttributes.builder(questionId, student.getEmail(), recipient)
                 .withResponseDetails(details)
+                .build();
+    }
+
+    private FeedbackResponseCommentAttributes getFeedbackResponseComment(String responseId, String comment) {
+        return FeedbackResponseCommentAttributes.builder()
+                .withFeedbackResponseId(responseId)
+                .withCommentGiver(student.getEmail())
+                .withCommentFromFeedbackParticipant(true)
+                .withCommentText(comment)
                 .build();
     }
 }

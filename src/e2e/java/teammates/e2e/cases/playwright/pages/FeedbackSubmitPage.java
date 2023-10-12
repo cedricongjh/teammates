@@ -98,8 +98,55 @@ public class FeedbackSubmitPage extends BasePage {
         }
     }
 
+    public void addComment(int qnNumber, String recipient, String newComment) {
+        Locator commentButton = getCommentButton(qnNumber, recipient);
+        commentButton.click();
+        // TODO: abstract this out for writing to text editor
+        String frameId = getMcqSection(qnNumber, recipient).locator("iframe").getAttribute("id");
+        page.frameLocator("#" + frameId).locator("#tinymce").click();
+        page.keyboard().type(newComment);
+    }
+
+    public void editComment(int qnNumber, String recipient, String newComment) {
+        Locator mcqSection = getMcqSection(qnNumber, recipient);
+        mcqSection.locator(".btn-edit-comment").click();
+        // TODO: abstract this out for writing to text editor
+        String frameId = getMcqSection(qnNumber, recipient).locator("iframe").getAttribute("id");
+        Locator textEditorLocator = page.frameLocator("#" + frameId).locator("#tinymce");
+        String currentText = textEditorLocator.textContent();
+        textEditorLocator.click();
+        for (int i = 0; i < currentText.length(); i++) {
+            page.keyboard().down("Backspace");
+        }
+        page.keyboard().type(newComment);
+    }
+
+    public void deleteComment(int qnNumber, String recipient) {
+        Locator mcqSection = getMcqSection(qnNumber, recipient);
+        mcqSection.locator(".btn-delete-comment").click();
+        waitForConfirmationModalAndClickOk();
+    }
+
+    public void verifyComment(int qnNumber, String recipient, String expectedComment) {
+        Locator commentSection = getMcqSection(qnNumber, recipient);
+        assertThat(commentSection.locator(".comment-text")).containsText(expectedComment);;
+    }
+
+    public void verifyNoCommentPresent(int qnNumber, String recipient) {
+        assertThat(getMcqSection(qnNumber, recipient).locator(".comment-text")).hasCount(0);
+    }
+
+    public void verifyStatusMessage(String message) {
+        assertThat(page.locator(".toast-body")).containsText(message);;
+    }
+
     public void clickSubmitQuestionButton(int qnNumber) {
         page.locator("#btn-submit-qn-" + qnNumber).click();
+        waitForConfirmationModalAndClickOk();
+    }
+
+    public void clickSubmitAllQuestionsButton() {
+        getSubmitAllQuestionsButton().click();
         waitForConfirmationModalAndClickOk();
     }
 
@@ -248,7 +295,15 @@ public class FeedbackSubmitPage extends BasePage {
         return getQuestionForm(qnNumber)
                     .getByRole(AriaRole.ROW, new Locator.GetByRoleOptions().setName(getResponseAriaLabel(recipient)))
                     .locator("label").filter(new Locator.FilterOptions().setHasText(regex));
-}
+    }
+
+    private Locator getMcqSection(int qnNumber, String recipient) {
+        return getQuestionForm(qnNumber).locator(".row").filter(new Locator.FilterOptions().setHasText(recipient));
+    }
+
+    private Locator getCommentButton(int qnNumber, String recipient) {
+        return getMcqSection(qnNumber, recipient).getByRole(AriaRole.BUTTON);
+    }
 
     private String getResponseAriaLabel(String recipient) {
         if (recipient == "" || recipient == "%GENERAL%" || recipient == "Myself") {
