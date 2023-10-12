@@ -20,13 +20,11 @@ import teammates.common.datatransfer.questions.FeedbackMcqResponseDetails;
 import teammates.common.util.AppUrl;
 import teammates.common.util.Const;
 import teammates.e2e.cases.playwright.pages.FeedbackSubmitPage;
-import teammates.e2e.cases.playwright.pages.LoginPage;
 import teammates.e2e.util.TestProperties;
 
 public class FeedbackSubmitPageE2ETest extends BaseE2ETest {
 
     protected DataBundle testData;
-    LoginPage loginPage;
     FeedbackSubmitPage submitPage;
     private StudentAttributes student;
     private InstructorAttributes instructor;
@@ -93,7 +91,7 @@ public class FeedbackSubmitPageE2ETest extends BaseE2ETest {
         ______TS("cannot submit in closed session");
         AppUrl closedSessionUrl = getStudentSubmitPageUrl(student, closedSession);
         submitPage.navigateWithAppUrl(closedSessionUrl);
-        submitPage.verifyCannotSubmit();
+        submitPage.verifyCannotSubmit(1);
 
         ______TS("can submit in grace period");
         AppUrl gracePeriodSessionUrl = getStudentSubmitPageUrl(student, gracePeriodSession);
@@ -150,7 +148,55 @@ public class FeedbackSubmitPageE2ETest extends BaseE2ETest {
         submitPage.verifyStatusMessage("Your comment has been deleted!");
         submitPage.verifyNoCommentPresent(qnToComment, recipient);
         verifyAbsentInDatabase(getFeedbackResponseComment(responseId, comment));
-        page.pause();
+
+
+        ______TS("preview as instructor");
+        logout();
+        AppUrl url = createFrontendUrl(Const.WebPageURIs.INSTRUCTOR_SESSION_SUBMISSION_PAGE)
+                .withCourseId(openSession.getCourseId())
+                .withSessionName(openSession.getFeedbackSessionName())
+                .withParam("previewas", instructor.getEmail());
+        submitPage = loginToPage(url, FeedbackSubmitPage.class, instructor.getGoogleId());
+
+        submitPage.verifyFeedbackSessionDetails(openSession, course);
+        submitPage.verifyNumQuestions(1);
+        submitPage.verifyQuestionDetails(1, testData.feedbackQuestions.get("qn5InSession1"));
+        submitPage.verifyCannotSubmit(1);
+
+        ______TS("preview as student");
+        url = createFrontendUrl(Const.WebPageURIs.SESSION_SUBMISSION_PAGE)
+                .withCourseId(openSession.getCourseId())
+                .withSessionName(openSession.getFeedbackSessionName())
+                .withParam("previewas", student.getEmail());
+        submitPage = getNewPageInstance(url, FeedbackSubmitPage.class);
+
+        submitPage.verifyFeedbackSessionDetails(openSession, course);
+        submitPage.verifyNumQuestions(4);
+        submitPage.verifyQuestionDetails(1, testData.feedbackQuestions.get("qn1InSession1"));
+        submitPage.verifyQuestionDetails(2, testData.feedbackQuestions.get("qn2InSession1"));
+        submitPage.verifyQuestionDetails(3, testData.feedbackQuestions.get("qn3InSession1"));
+        submitPage.verifyQuestionDetails(4, testData.feedbackQuestions.get("qn4InSession1"));
+        submitPage.verifyCannotSubmit(4);
+
+        ______TS("moderating instructor cannot see questions without instructor visibility");
+        url = createFrontendUrl(Const.WebPageURIs.SESSION_SUBMISSION_PAGE)
+                .withCourseId(gracePeriodSession.getCourseId())
+                .withSessionName(gracePeriodSession.getFeedbackSessionName())
+                .withParam("moderatedperson", student.getEmail())
+                .withParam("moderatedquestionId", questionId);
+        submitPage = getNewPageInstance(url, FeedbackSubmitPage.class);
+
+        submitPage.verifyFeedbackSessionDetails(gracePeriodSession, course);
+        // One out of two questions in grace period session should not be visible
+        submitPage.verifyNumQuestions(1);
+        submitPage.verifyQuestionDetails(1, question);
+
+        ______TS("submit moderated response");
+        response = getMcqResponse(questionId, recipient, false, "UI");
+        submitPage.fillMcqResponse(1, recipient, response);
+        submitPage.clickSubmitQuestionButton(1);
+
+        verifyPresentInDatabase(response);
     }
 
     private AppUrl getStudentSubmitPageUrl(StudentAttributes student, FeedbackSessionAttributes session) {

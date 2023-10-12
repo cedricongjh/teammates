@@ -84,9 +84,13 @@ public class FeedbackSubmitPage extends BasePage {
         waitForConfirmationModalAndClickOk();
     }
 
-    public void verifyCannotSubmit() {
-        Locator submitButton = page.locator("[id^='btn-submit-qn-']");
-        assertThat(submitButton).isDisabled();
+    public void verifyCannotSubmit(int numQuestions) {
+        for (int i = 0; i < numQuestions; i++) {
+            int qnNumber = i + 1;
+            getQuestionForm(qnNumber);
+            Locator submitButton = page.locator("#btn-submit-qn-" + qnNumber);
+            assertThat(submitButton).isDisabled();
+        }
     }
 
     public void fillMcqResponse(int qnNumber, String recipient, FeedbackResponseAttributes response) {
