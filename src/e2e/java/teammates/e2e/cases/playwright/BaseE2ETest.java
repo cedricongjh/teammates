@@ -26,6 +26,8 @@ import teammates.common.datatransfer.attributes.StudentAttributes;
 import teammates.common.exception.HttpRequestFailedException;
 import teammates.common.util.AppUrl;
 import teammates.common.util.Const;
+import teammates.e2e.cases.playwright.pages.BasePage;
+import teammates.e2e.cases.playwright.pages.LoginPage;
 import teammates.e2e.util.BackDoor;
 import teammates.e2e.util.TestProperties;
 import teammates.test.BaseTestCaseWithDatabaseAccess;
@@ -82,6 +84,25 @@ public abstract class BaseE2ETest extends BaseTestCaseWithDatabaseAccess {
         }
 
         page.navigate(url.toAbsoluteString());
+    }
+
+
+    protected <T extends BasePage> T loginToPage(AppUrl url, Class<T> typeOfPage, String userId) {
+        // This will be redirected to the dev server login page.
+        page.navigate(url.toAbsoluteString());
+
+        LoginPage loginPage = BasePage.getNewPageInstance(page, LoginPage.class);
+        loginPage.loginToDevServer(userId);
+
+        return getNewPageInstance(url, typeOfPage);
+    }
+
+    /**
+     * Visits the URL and gets the page object representation of the visited web page in the browser.
+     */
+    protected <T extends BasePage> T getNewPageInstance(AppUrl url, Class<T> typeOfPage) {
+        page.navigate(url.toAbsoluteString());
+        return BasePage.getNewPageInstance(page, typeOfPage);
     }
 
   AccountAttributes getAccount(String googleId) {

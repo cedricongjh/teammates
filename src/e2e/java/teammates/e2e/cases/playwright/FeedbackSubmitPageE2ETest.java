@@ -49,15 +49,10 @@ public class FeedbackSubmitPageE2ETest extends BaseE2ETest {
         closedSession = testData.feedbackSessions.get("Closed Session");
         gracePeriodSession = testData.feedbackSessions.get("Grace Period Session");
 
-        loginPage = new LoginPage(page);
-        AppUrl loginPageUrl = createBackendUrl("/devServerLogin");
-        loginPage.navigateWithAppUrl(loginPageUrl);
-        loginPage.loginToDevServer(instructor.getGoogleId());
         AppUrl url = createFrontendUrl(Const.WebPageURIs.INSTRUCTOR_SESSION_SUBMISSION_PAGE)
                 .withCourseId(openSession.getCourseId())
                 .withSessionName(openSession.getFeedbackSessionName());
-        submitPage = new FeedbackSubmitPage(page);
-        submitPage.navigateWithAppUrl(url);
+        submitPage = loginToPage(url, FeedbackSubmitPage.class, instructor.getGoogleId());
     }
 
     @Test
@@ -71,10 +66,7 @@ public class FeedbackSubmitPageE2ETest extends BaseE2ETest {
 
         ______TS("questions with giver type students");
         logout();
-        AppUrl loginPageUrl = createBackendUrl("/devServerLogin");
-        loginPage.navigateWithAppUrl(loginPageUrl);
-        loginPage.loginToDevServer(student.getGoogleId());
-        submitPage.navigateWithAppUrl(getStudentSubmitPageUrl(student, openSession));
+        submitPage = loginToPage(getStudentSubmitPageUrl(student, openSession), FeedbackSubmitPage.class, student.getGoogleId());
 
         submitPage.verifyNumQuestions(4);
         submitPage.verifyQuestionDetails(1, testData.feedbackQuestions.get("qn1InSession1"));
