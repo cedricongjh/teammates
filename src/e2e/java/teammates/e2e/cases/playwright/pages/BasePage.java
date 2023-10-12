@@ -1,5 +1,7 @@
 package teammates.e2e.cases.playwright.pages;
 
+import static com.microsoft.playwright.assertions.PlaywrightAssertions.assertThat;
+
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.time.Instant;
@@ -7,6 +9,7 @@ import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 
+import com.microsoft.playwright.Locator;
 import com.microsoft.playwright.Page;
 
 import teammates.common.util.AppUrl;
@@ -21,6 +24,15 @@ public class BasePage {
 
     public void navigateWithAppUrl(AppUrl url) {
         page.navigate(url.toAbsoluteString());
+    }
+
+    public void waitForConfirmationModalAndClickOk() {
+        Locator okayButton = page.locator(".modal-btn-ok");
+        okayButton.click();
+    }
+
+    public void verifyStatusMessage(String message) {
+        assertThat(page.locator(".toast-body")).containsText(message);;
     }
 
     public static <T extends BasePage> T getNewPageInstance(Page page, Class<T> typeOfPage) {

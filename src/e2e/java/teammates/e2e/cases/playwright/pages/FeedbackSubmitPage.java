@@ -67,11 +67,6 @@ public class FeedbackSubmitPage extends BasePage {
         }
     }
 
-    public void waitForConfirmationModalAndClickOk() {
-        Locator okayButton = page.locator(".modal-btn-ok");
-        okayButton.click();
-    }
-
     public void verifyWarningMessageForPartialResponse(int[] unansweredQuestions) {
         getSubmitAllQuestionsButton().click();
         StringBuilder expectedSb = new StringBuilder();
@@ -138,10 +133,6 @@ public class FeedbackSubmitPage extends BasePage {
 
     public void verifyNoCommentPresent(int qnNumber, String recipient) {
         assertThat(getMcqSection(qnNumber, recipient).locator(".comment-text")).hasCount(0);
-    }
-
-    public void verifyStatusMessage(String message) {
-        assertThat(page.locator(".toast-body")).containsText(message);;
     }
 
     public void clickSubmitQuestionButton(int qnNumber) {
