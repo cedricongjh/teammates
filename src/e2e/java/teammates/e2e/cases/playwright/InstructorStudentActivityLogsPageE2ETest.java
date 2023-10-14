@@ -1,7 +1,6 @@
 package teammates.e2e.cases.playwright;
 
 import java.time.Instant;
-import java.time.LocalDate;
 import java.time.ZoneId;
 import java.time.temporal.ChronoUnit;
 
@@ -87,7 +86,11 @@ public class InstructorStudentActivityLogsPageE2ETest extends BaseE2ETest {
         studentActivityLogsPage = loginToPage(url, InstructorStudentActivityLogsPage.class,
                 instructor.getGoogleId());
         studentActivityLogsPage.setActivityType("session access and submission");
-        page.pause();
+        studentActivityLogsPage.setLogsFromDateTime(
+                Instant.now().minus(2, ChronoUnit.DAYS),
+                ZoneId.systemDefault().getId());
+        studentActivityLogsPage.search();
+        studentActivityLogsPage.verifyLogPresentForSession(feedbackQuestion.getFeedbackSessionName(), 1);
     }
 
 }

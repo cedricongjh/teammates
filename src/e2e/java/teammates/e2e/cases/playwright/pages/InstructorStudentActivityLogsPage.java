@@ -1,18 +1,16 @@
 package teammates.e2e.cases.playwright.pages;
 
+import static com.microsoft.playwright.assertions.PlaywrightAssertions.assertThat;
+
 import java.time.Instant;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
-import java.util.HashMap;
-import java.util.Map;
 
-import com.microsoft.playwright.JSHandle;
 import com.microsoft.playwright.Locator;
 import com.microsoft.playwright.Page;
+import com.microsoft.playwright.Locator.FilterOptions;
 
 public class InstructorStudentActivityLogsPage extends BasePage {
-    private final Map<String, Boolean> isLogPresentForSession = new HashMap<>();
-
     private Locator activityTypeDropdown;
 
     private Locator studentNameDropDown;
@@ -74,6 +72,14 @@ public class InstructorStudentActivityLogsPage extends BasePage {
 
     public void search() {
         searchButton.click();
+    }
+
+    public void verifyLogPresentForSession(String sessionName, int numLogs) {
+        assertThat(logsOutput).containsText(sessionName);
+
+        Locator sessionLogSection = logsOutput.locator(".card").filter(new FilterOptions().setHasText(sessionName));
+        sessionLogSection.locator(".card-body").locator("tr").highlight();
+        assertThat(sessionLogSection.locator(".card-body").locator("tbody").locator("tr")).hasCount(numLogs);
     }
 
     private String getTimeString(Instant instant, String timeZone) {
