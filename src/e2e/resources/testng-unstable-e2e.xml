@@ -8,7 +8,7 @@
         <classes>
             <class name="teammates.e2e.cases.FeedbackSubmitPageE2ETest" />
             <class name="teammates.e2e.cases.InstructorStudentActivityLogsPageE2ETest" />
-            <class name="teammates.e2e.cases.InstructorHomePageE2ETest" />
+            <!-- <class name="teammates.e2e.cases.InstructorHomePageE2ETest" /> -->
             <class name="teammates.e2e.cases.InstructorSearchPageE2ETest" />
         </classes>
     </test>

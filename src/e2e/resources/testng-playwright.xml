@@ -3,16 +3,9 @@
 <suite name="playwright-tests" parallel="tests" thread-count="2">
     <test name="playwright-tests" parallel="classes">
         <classes>
-            <class name="teammates.e2e.cases.playwright.TestPlaywright" />
-            <class name="teammates.e2e.cases.playwright.LoginTest" />
+            <class name="teammates.e2e.cases.playwright.FeedbackSubmitPageE2ETest" />
+            <class name="teammates.e2e.cases.playwright.InstructorStudentActivityLogsPageE2ETest" />
+            <class name="teammates.e2e.cases.InstructorSearchPageE2ETest" />
         </classes>
     </test>
-
-    <before-suite>
-        <method name="globalSetup" class="teammates.e2e.cases.playwright.GlobalSetup" />
-    </before-suite>
-    
-    <after-suite>
-        <method name="globalTeardown" class="teammates.e2e.cases.playwright.GlobalSetup" />
-    </after-suite>
 </suite>
