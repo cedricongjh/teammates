@@ -301,7 +301,9 @@ public class FeedbackSubmitPage extends BasePage {
     }
 
     private Locator getRecipientSection(int qnNumber, String recipient) {
-        return getQuestionForm(qnNumber).locator(".row").filter(new Locator.FilterOptions().setHasText(recipient));
+        Locator recipientSectionLocator = getQuestionForm(qnNumber).locator(".row").filter(new Locator.FilterOptions().setHasText(recipient));
+        recipientSectionLocator.scrollIntoViewIfNeeded();
+        return recipientSectionLocator;
     }
 
     private Locator getCommentButton(int qnNumber, String recipient) {

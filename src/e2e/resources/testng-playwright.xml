@@ -5,7 +5,7 @@
         <classes>
             <class name="teammates.e2e.cases.playwright.FeedbackSubmitPageE2ETest" />
             <class name="teammates.e2e.cases.playwright.InstructorStudentActivityLogsPageE2ETest" />
-            <class name="teammates.e2e.cases.InstructorSearchPageE2ETest" />
+            <class name="teammates.e2e.cases.playwright.InstructorSearchPageE2ETest" />
         </classes>
     </test>
 </suite>
