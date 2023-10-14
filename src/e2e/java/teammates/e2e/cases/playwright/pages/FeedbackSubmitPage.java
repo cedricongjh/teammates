@@ -20,6 +20,7 @@ import teammates.common.datatransfer.attributes.FeedbackQuestionAttributes;
 import teammates.common.datatransfer.attributes.FeedbackResponseAttributes;
 import teammates.common.datatransfer.attributes.FeedbackSessionAttributes;
 import teammates.common.datatransfer.questions.FeedbackMcqResponseDetails;
+import teammates.common.datatransfer.questions.FeedbackTextResponseDetails;
 
 public class FeedbackSubmitPage extends BasePage {
 
@@ -88,6 +89,13 @@ public class FeedbackSubmitPage extends BasePage {
         }
     }
 
+    public void fillTextResponse(int qnNumber, String recipient, FeedbackResponseAttributes response) {
+        FeedbackTextResponseDetails responseDetails = (FeedbackTextResponseDetails) response.getResponseDetailsCopy();
+        String frameId = getRecipientSection(qnNumber, recipient).locator("iframe").getAttribute("id");
+        page.frameLocator("#" + frameId).locator("#tinymce").click();
+        page.keyboard().type(responseDetails.getAnswer());
+    }
+
     public void fillMcqResponse(int qnNumber, String recipient, FeedbackResponseAttributes response) {
         FeedbackMcqResponseDetails responseDetails = (FeedbackMcqResponseDetails) response.getResponseDetailsCopy();
         if (responseDetails.isOther()) {
@@ -101,16 +109,16 @@ public class FeedbackSubmitPage extends BasePage {
         Locator commentButton = getCommentButton(qnNumber, recipient);
         commentButton.click();
         // TODO: abstract this out for writing to text editor
-        String frameId = getMcqSection(qnNumber, recipient).locator("iframe").getAttribute("id");
+        String frameId = getRecipientSection(qnNumber, recipient).locator("iframe").getAttribute("id");
         page.frameLocator("#" + frameId).locator("#tinymce").click();
         page.keyboard().type(newComment);
     }
 
     public void editComment(int qnNumber, String recipient, String newComment) {
-        Locator mcqSection = getMcqSection(qnNumber, recipient);
+        Locator mcqSection = getRecipientSection(qnNumber, recipient);
         mcqSection.locator(".btn-edit-comment").click();
         // TODO: abstract this out for writing to text editor
-        String frameId = getMcqSection(qnNumber, recipient).locator("iframe").getAttribute("id");
+        String frameId = getRecipientSection(qnNumber, recipient).locator("iframe").getAttribute("id");
         Locator textEditorLocator = page.frameLocator("#" + frameId).locator("#tinymce");
         String currentText = textEditorLocator.textContent();
         textEditorLocator.click();
@@ -121,18 +129,18 @@ public class FeedbackSubmitPage extends BasePage {
     }
 
     public void deleteComment(int qnNumber, String recipient) {
-        Locator mcqSection = getMcqSection(qnNumber, recipient);
+        Locator mcqSection = getRecipientSection(qnNumber, recipient);
         mcqSection.locator(".btn-delete-comment").click();
         waitForConfirmationModalAndClickOk();
     }
 
     public void verifyComment(int qnNumber, String recipient, String expectedComment) {
-        Locator commentSection = getMcqSection(qnNumber, recipient);
+        Locator commentSection = getRecipientSection(qnNumber, recipient);
         assertThat(commentSection.locator(".comment-text")).containsText(expectedComment);;
     }
 
     public void verifyNoCommentPresent(int qnNumber, String recipient) {
-        assertThat(getMcqSection(qnNumber, recipient).locator(".comment-text")).hasCount(0);
+        assertThat(getRecipientSection(qnNumber, recipient).locator(".comment-text")).hasCount(0);
     }
 
     public void clickSubmitQuestionButton(int qnNumber) {
@@ -292,12 +300,12 @@ public class FeedbackSubmitPage extends BasePage {
                     .locator("label").filter(new Locator.FilterOptions().setHasText(regex));
     }
 
-    private Locator getMcqSection(int qnNumber, String recipient) {
+    private Locator getRecipientSection(int qnNumber, String recipient) {
         return getQuestionForm(qnNumber).locator(".row").filter(new Locator.FilterOptions().setHasText(recipient));
     }
 
     private Locator getCommentButton(int qnNumber, String recipient) {
-        return getMcqSection(qnNumber, recipient).getByRole(AriaRole.BUTTON);
+        return getRecipientSection(qnNumber, recipient).getByRole(AriaRole.BUTTON);
     }
 
     private String getResponseAriaLabel(String recipient) {
