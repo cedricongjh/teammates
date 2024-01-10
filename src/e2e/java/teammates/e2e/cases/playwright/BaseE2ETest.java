@@ -94,6 +94,11 @@ public abstract class BaseE2ETest extends BaseTestCaseWithDatabaseAccess {
         LoginPage loginPage = BasePage.getNewPageInstance(page, LoginPage.class);
         loginPage.loginToDevServer(userId);
 
+        page.waitForCondition(() -> {
+            page.reload();
+            return !page.getByText("To access a course on TEAMMATES, you need to wait until an instructor adds you").isVisible();
+        });
+
         return getNewPageInstance(url, typeOfPage);
     }
 

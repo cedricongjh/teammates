@@ -71,7 +71,7 @@ dependencies {
     implementation("org.eclipse.jetty:jetty-webapp")
     implementation("org.eclipse.jetty:jetty-annotations")
     implementation("org.jsoup:jsoup:1.15.2")
-    implementation group: 'com.microsoft.playwright', name: 'playwright', version: '1.28.1'
+    implementation group: 'com.microsoft.playwright', name: 'playwright', version: '1.40.0'
 
     testAnnotationProcessor(testng)
 
