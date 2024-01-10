@@ -6,7 +6,7 @@
 <!-- e.g. [#3942] Remove unnecessary System.out.printlns from Java files -->
 
 <!-- Add the issue number to the "Fixes" keyword below. -->
-<!-- Fixes # -->
+Fixes #
 
 **Outline of Solution**
 
