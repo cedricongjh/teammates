@@ -303,7 +303,7 @@ npm run test
 To run all front-end component tests once and generate coverage data afterwards, run the following command:
 
 ```sh
-# npm run coverage
+npm run coverage
 ```
 
 To run an individual test in a test file, change `it` in the `*.spec.ts` file to `fit`.
