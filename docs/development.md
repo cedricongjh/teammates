@@ -297,7 +297,7 @@ There are two big categories of testing in TEAMMATES:
 To run all front-end component tests in watch mode (i.e. any change to source code will automatically reload the tests), run the following command:
 
 ```sh
-# npm run test
+npm run test
 ```
 
 To run all front-end component tests once and generate coverage data afterwards, run the following command:
