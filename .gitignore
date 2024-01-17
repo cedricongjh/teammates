@@ -89,3 +89,5 @@ docs/_site/*
 docs/_markbind/logs/*
 .stylelintcache
 .eslintcache
+
+playwright/.auth

@@ -245,8 +245,6 @@ public final class FeedbackSessionsDb extends EntitiesDb<FeedbackSession, Feedba
                 && this.<Boolean>hasSameValue(
                         feedbackSession.isPublishedEmailEnabled(), newAttributes.isPublishedEmailEnabled())
                 && this.<Map<String, Instant>>hasSameValue(
-                        feedbackSession.getStudentDeadlines(), newAttributes.getStudentDeadlines())
-                && this.<Map<String, Instant>>hasSameValue(
                         feedbackSession.getInstructorDeadlines(), newAttributes.getInstructorDeadlines());
         if (hasSameAttributes) {
             log.info(String.format(
