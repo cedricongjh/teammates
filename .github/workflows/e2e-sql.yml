@@ -33,8 +33,7 @@ jobs:
           path: |
             ~/.gradle/caches
             ~/.gradle/wrapper
-            !**/postgres-data
-          key: ${{ runner.os }}-gradle-${{ hashFiles('**/*.gradle*') }}
+          key: ${{ runner.os }}-gradle-${{ hashFiles('**/*.gradle*', '!postgres-data/**') }}
           restore-keys: |
             ${{ runner.os }}-gradle-
       - name: Update Property File
