@@ -13,7 +13,7 @@ The details for this can be seen on the documentation of each service.
 
 <!-- ## SendGrid -->
 
-- Website: https://sendgrid.com
+<!-- - Website: https://sendgrid.com -->
 
 To use SendGrid in TEAMMATES, create a free SendGrid account, create an API key, and update the relevant values in `build.properties`.
 
