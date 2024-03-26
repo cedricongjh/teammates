@@ -29,6 +29,7 @@ import { StudentPageComponent } from './pages-student/student-page.component';
 import { PublicPageComponent } from './public-page.component';
 import { environment } from '../environments/environment';
 import { Intent } from '../types/api-request';
+import { DatabundlePageComponent } from './pages-dev/databundle-page/databundle-page.component';
 
 const customUrlSerializer: CustomUrlSerializer = new CustomUrlSerializer();
 const customUrlSerializerProvider: Provider = {
@@ -107,6 +108,12 @@ let routes: Routes = [
     ],
   },
   {
+    path: 'databundle',
+    component: DatabundlePageComponent,
+    loadChildren: () => import('./pages-dev/databundle-page/databundle-page.module')
+        .then((m: any) => m.DatabundlePageModule),
+  },
+  {
     path: '',
     pathMatch: 'full',
     redirectTo: 'web',
@@ -153,6 +160,7 @@ if (environment.maintenance) {
     AdminPageComponent,
     MaintenancePageComponent,
     MaintainerPageComponent,
+    DatabundlePageComponent,
   ],
   imports: [
     SimpleModalModule,
