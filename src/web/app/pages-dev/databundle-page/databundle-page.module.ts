@@ -1,12 +1,11 @@
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
-
-
+import { ForceDirectedGraphModule } from '../../components/force-directed-graph/force-directed-graph.module';
 
 @NgModule({
-  declarations: [],
   imports: [
-    CommonModule
+    CommonModule,
+    ForceDirectedGraphModule,
   ]
 })
 export class DatabundlePageModule { }

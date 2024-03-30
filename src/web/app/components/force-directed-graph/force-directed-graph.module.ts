@@ -3,7 +3,7 @@ import { NgModule } from '@angular/core';
 import { ForceDirectedGraphComponent } from './force-directed-graph.component';
 
 /**
- * Error report module.
+ * Force directed graph module.
  */
 @NgModule({
   imports: [
