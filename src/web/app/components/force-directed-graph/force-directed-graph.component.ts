@@ -44,7 +44,7 @@ export class ForceDirectedGraphComponent implements OnInit {
   private createSimulation(nodes: Node[], links: Link[]) {
     return forceSimulation(nodes)
       .force('link', forceLink(links).id((d: any) => d.id))
-      .force('charge', forceManyBody().strength(-50))
+      .force('charge', forceManyBody().strength(-100))
       .force('center', forceCenter(500, 500))
       .force('collision', forceCollide().radius(20).strength(0.8));
   }
@@ -76,6 +76,12 @@ export class ForceDirectedGraphComponent implements OnInit {
     this.graphNodes.call(drag<SVGGElement, Node>().on("start", this.dragstarted)
       .on("drag", this.dragged)
       .on("end", this.dragended));
+
+    this.graphNodes.on("click", (node: any, bla: any) => {
+      console.log(node);
+      console.log(bla);
+      console.log('click');
+    })
   }
 
   private setUpSimulationUpdates() {
@@ -123,6 +129,4 @@ export class ForceDirectedGraphComponent implements OnInit {
     event.subject.fx = null;
     event.subject.fy = null;
   }
-
-  
 }
