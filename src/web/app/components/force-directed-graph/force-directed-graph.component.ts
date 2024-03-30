@@ -1,5 +1,5 @@
 import { Component, ElementRef, Input, OnInit } from '@angular/core';
-import { forceCenter, forceLink, forceManyBody, forceSimulation, select, Selection, Simulation } from 'd3';
+import { D3DragEvent, drag, forceCenter, forceCollide, forceLink, forceManyBody, forceSimulation, select, Selection, Simulation, zoom } from 'd3';
 import { Node, Link } from './force-directed-graph.model';
 
 @Component({
@@ -25,6 +25,7 @@ export class ForceDirectedGraphComponent implements OnInit {
 
   ngOnInit() {
     this.simulation = this.createSimulation(this.nodes, this.links);
+    this.setUpZoom();
     this.setUpLinks();
     this.setUpNodes();
     this.setUpSimulationUpdates();
@@ -32,15 +33,20 @@ export class ForceDirectedGraphComponent implements OnInit {
 
   private createSvgContainer() {
     return select(this.hostElement).append('svg')
-      .attr('width', "100vw")
-      .attr('height', "100vh");
+      .attr('width', 1000)
+      .attr('height', 1000)
+      .call(zoom<SVGSVGElement, any>().on("zoom", (event: any) => {
+        this.svg.attr("transform", event.transform)
+        }))
+      .append('g');
   }
 
   private createSimulation(nodes: Node[], links: Link[]) {
     return forceSimulation(nodes)
       .force('link', forceLink(links).id((d: any) => d.id))
-      .force('charge', forceManyBody().strength(-100))
-      .force('center', forceCenter(400, 300));
+      .force('charge', forceManyBody().strength(-50))
+      .force('center', forceCenter(500, 500))
+      .force('collision', forceCollide().radius(20).strength(0.8));
   }
 
   private setUpLinks() {
@@ -55,26 +61,21 @@ export class ForceDirectedGraphComponent implements OnInit {
   private setUpNodes() {
     this.graphNodes = this.svg.selectAll('.node')
       .data(this.nodes)
-      .enter().append('g')
-      .attr('class', 'node')
+      .enter()
+      .append('g')
+      .attr('class', 'node');
 
-      this.graphNodes.append('circle')
-      .attr('r', 8)
-      .style('fill', 'red');
+    this.graphNodes.append('circle')
+      .attr('r', d => d.size ?? 8)
+      .style('fill', d => d.color ?? 'red');
 
-      this.graphNodes.append('text')
-        .attr('x', 12)
-        .attr('dy', '.5em')
-        .text(d => d.id);
+    this.graphNodes.append('text')
+      .attr("x", 12)
+      .text(d => d.name);
 
-      this.graphNodes.on("click", function() {
-        let text = select(this).select("text");
-        if (text.style("visibility") === "hidden") {
-          text.style("visibility", "visible");
-        } else {
-          text.style("visibility", "hidden");
-        }
-    });
+    this.graphNodes.call(drag<SVGGElement, Node>().on("start", this.dragstarted)
+      .on("drag", this.dragged)
+      .on("end", this.dragended));
   }
 
   private setUpSimulationUpdates() {
@@ -86,4 +87,42 @@ export class ForceDirectedGraphComponent implements OnInit {
       this.graphNodes.attr('transform', d => `translate(${(d as any).x},${(d as any).y})`);
     });
   }
+
+  private setUpZoom = () => {
+    const handleZoom = (e: any) => {
+      console.log('handle zoom')
+      this.svg.attr('transform', e.transform)
+    }
+
+    let zoomHandler = zoom()
+      .on('zoom', handleZoom);
+  
+    this.svg.call(zoomHandler);
+  }
+
+  private dragstarted = (
+    event: D3DragEvent<SVGCircleElement, Node, Node>
+  ) => {
+    event.sourceEvent.stopPropagation();
+    if (!event.active) this.simulation.alphaTarget(0.3).restart();
+    event.subject.fx = event.subject.x;
+    event.subject.fy = event.subject.y;
+  }
+
+  private dragged = (
+    event: D3DragEvent<SVGCircleElement, Node, Node>
+  ) => {
+    event.subject.fx = event.x;
+    event.subject.fy = event.y;
+  }
+
+  private dragended = (
+    event: D3DragEvent<SVGCircleElement, Node, Node>
+  ) => {
+    if (!event.active) this.simulation.alphaTarget(0);
+    event.subject.fx = null;
+    event.subject.fy = null;
+  }
+
+  
 }
