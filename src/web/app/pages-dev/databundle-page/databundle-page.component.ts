@@ -1,8 +1,10 @@
 import { Component, OnChanges, OnInit } from '@angular/core';
+import { SimpleModalService } from '../../../services/simple-modal.service';
 import { Link, Node } from '../../components/force-directed-graph/force-directed-graph.model';
+import { SimpleModalType } from '../../components/simple-modal/simple-modal-type';
 
 interface DataBundleEntity {
-  id: string;
+  id?: string;
   [key: string]: any;
 }
 
@@ -14,10 +16,27 @@ interface FeedbackQuestionDataBundleEntity extends DataBundleEntity {
   feedbackSession: DataBundleEntity;
 }
 
+interface FeedbackResponseDataBundleEntity extends DataBundleEntity {
+  feedbackQuestion: DataBundleEntity;
+}
+
+interface FeedbackResponseCommentDataBundleEntity extends DataBundleEntity {
+  feedbackResponse: DataBundleEntity;
+  giverSection: DataBundleEntity;
+  recipientSection: DataBundleEntity;
+}
+
+interface SectionDataBundleEntity extends DataBundleEntity {
+  course: DataBundleEntity;
+}
+
 interface DataBundle {
   courses: { [key: string]: DataBundleEntity }
   feedbackSessions: { [key: string]: FeedbackSessionDataBundleEntity }
   feedbackQuestions: { [key: string]: FeedbackQuestionDataBundleEntity }
+  feedbackResponses: { [key: string]: FeedbackResponseDataBundleEntity }
+  feedbackResponseComments: { [key: string]: FeedbackResponseCommentDataBundleEntity }
+  sections: { [key: string]: SectionDataBundleEntity }
 }
 
 @Component({
@@ -29,6 +48,8 @@ export class DatabundlePageComponent implements OnInit, OnChanges {
 
   nodes: Node[] = [];
   links: Link[] = [];
+
+  constructor(private simpleModalService: SimpleModalService) {}
 
   ngOnInit(): void {
     const data: DataBundle = {
@@ -73,6 +94,36 @@ export class DatabundlePageComponent implements OnInit, OnChanges {
           "institute": "TEAMMATES Test Institute 3",
           "timeZone": "UTC"
         }
+      },
+      "sections": {
+        "section1InCourse1": {
+          "id": "00000000-0000-4000-8000-000000000201",
+          "course": {
+            "id": "course-1"
+          },
+          "name": "Section 1"
+        },
+        "section1InCourse2": {
+          "id": "00000000-0000-4000-8000-000000000202",
+          "course": {
+            "id": "course-2"
+          },
+          "name": "Section 2"
+        },
+        "section2InCourse1": {
+          "id": "00000000-0000-4000-8000-000000000203",
+          "course": {
+            "id": "course-1"
+          },
+          "name": "Section 3"
+        },
+        "section1InCourse3": {
+            "id": "00000000-0000-4000-8000-000000000204",
+            "course": {
+              "id": "course-3"
+            },
+            "name": "Section 1"
+          }
       },
       "feedbackSessions": {
         "session1InCourse1": {
@@ -420,17 +471,315 @@ export class DatabundlePageComponent implements OnInit, OnChanges {
           "showRecipientNameTo": ["INSTRUCTORS"]
         }
       },
+      "feedbackResponses": {
+        "response1ForQ1": {
+          "id": "00000000-0000-4000-8000-000000000901",
+          "feedbackQuestion": {
+            "id": "00000000-0000-4000-8000-000000000801",
+            "questionDetails": {
+              "questionType": "TEXT",
+              "questionText": "What is the best selling point of your product?"
+            }
+          },
+          "giver": "student1@teammates.tmt",
+          "recipient": "student1@teammates.tmt",
+          "giverSection": {
+            "id": "00000000-0000-4000-8000-000000000201"
+          },
+          "recipientSection": {
+            "id": "00000000-0000-4000-8000-000000000201"
+          },
+          "answer": {
+            "questionType": "TEXT",
+            "answer": "Student 1 self feedback."
+          }
+        },
+        "response2ForQ1": {
+          "id": "00000000-0000-4000-8000-000000000902",
+          "feedbackQuestion": {
+            "id": "00000000-0000-4000-8000-000000000801",
+            "questionDetails": {
+              "questionType": "TEXT",
+              "questionText": "What is the best selling point of your product?"
+            }
+          },
+          "giver": "student2@teammates.tmt",
+          "recipient": "student2@teammates.tmt",
+          "giverSection": {
+            "id": "00000000-0000-4000-8000-000000000201"
+          },
+          "recipientSection": {
+            "id": "00000000-0000-4000-8000-000000000201"
+          },
+          "answer": {
+            "questionType": "TEXT",
+            "answer": "Student 2 self feedback."
+          }
+        },
+        "response1ForQ2": {
+          "id": "00000000-0000-4000-8000-000000000903",
+          "feedbackQuestion": {
+            "id": "00000000-0000-4000-8000-000000000802",
+            "feedbackSession": {
+              "id": "00000000-0000-4000-8000-000000000701"
+            },
+            "questionDetails": {
+              "recommendedLength": 0,
+              "questionType": "TEXT",
+              "questionText": "Rate 1 other student's product"
+            },
+            "description": "This is a text question.",
+            "questionNumber": 2,
+            "giverType": "STUDENTS",
+            "recipientType": "STUDENTS_EXCLUDING_SELF",
+            "numOfEntitiesToGiveFeedbackTo": 1,
+            "showResponsesTo": ["INSTRUCTORS", "RECEIVER"],
+            "showGiverNameTo": ["INSTRUCTORS"],
+            "showRecipientNameTo": ["INSTRUCTORS", "RECEIVER"]
+          },
+          "giver": "student2@teammates.tmt",
+          "recipient": "student1@teammates.tmt",
+          "giverSection": {
+            "id": "00000000-0000-4000-8000-000000000201"
+          },
+          "recipientSection": {
+            "id": "00000000-0000-4000-8000-000000000201"
+          },
+          "answer": {
+            "questionType": "TEXT",
+            "answer": "Student 2's rating of Student 1's project."
+          }
+        },
+        "response2ForQ2": {
+          "id": "00000000-0000-4000-8000-000000000904",
+          "feedbackQuestion": {
+            "id": "00000000-0000-4000-8000-000000000802",
+            "feedbackSession": {
+              "id": "00000000-0000-4000-8000-000000000701"
+            },
+            "questionDetails": {
+              "recommendedLength": 0,
+              "questionType": "TEXT",
+              "questionText": "Rate 1 other student's product"
+            },
+            "description": "This is a text question.",
+            "questionNumber": 2,
+            "giverType": "STUDENTS",
+            "recipientType": "STUDENTS_EXCLUDING_SELF",
+            "numOfEntitiesToGiveFeedbackTo": 1,
+            "showResponsesTo": ["INSTRUCTORS", "RECEIVER"],
+            "showGiverNameTo": ["INSTRUCTORS"],
+            "showRecipientNameTo": ["INSTRUCTORS", "RECEIVER"]
+          },
+          "giver": "student3@teammates.tmt",
+          "recipient": "student2@teammates.tmt",
+          "giverSection": {
+            "id": "00000000-0000-4000-8000-000000000201"
+          },
+          "recipientSection": {
+            "id": "00000000-0000-4000-8000-000000000201"
+          },
+          "answer": {
+            "questionType": "TEXT",
+            "answer": "Student 3's rating of Student 2's project."
+          }
+        },
+        "response1ForQ3": {
+          "id": "00000000-0000-4000-8000-000000000905",
+          "feedbackQuestion": {
+            "id": "00000000-0000-4000-8000-000000000803",
+            "questionDetails": {
+              "questionType": "TEXT",
+              "questionText": "My comments on the class"
+            }
+          },
+          "giver": "student1@teammates.tmt",
+          "recipient": "student1@teammates.tmt",
+          "giverSection": {
+            "id": "00000000-0000-4000-8000-000000000201"
+          },
+          "recipientSection": {
+            "id": "00000000-0000-4000-8000-000000000201"
+          },
+          "answer": {
+            "questionType": "TEXT",
+            "answer": "The class is great."
+          }
+        },
+        "response1ForQ1InSession2": {
+          "id": "00000000-0000-4000-8001-000000000901",
+          "feedbackQuestion": {
+            "id": "00000000-0000-4000-8001-000000000800",
+            "questionDetails": {
+              "hasAssignedWeights": false,
+              "mcqWeights": [],
+              "mcqOtherWeight": 0.0,
+              "mcqChoices": ["Great", "Perfect"],
+              "otherEnabled": false,
+              "questionDropdownEnabled": false,
+              "generateOptionsFor": "NONE",
+              "questionType": "MCQ",
+              "questionText": "How do you think you did?"
+            }
+          },
+          "giver": "student1@teammates.tmt",
+          "recipient": "student1@teammates.tmt",
+          "giverSection": {
+            "id": "00000000-0000-4000-8000-000000000201"
+          },
+          "recipientSection": {
+            "id": "00000000-0000-4000-8000-000000000201"
+          },
+          "answer": {
+            "answer": "Great",
+            "otherFieldContent": "",
+            "questionType": "MCQ"
+          }
+        }
+      },
+      "feedbackResponseComments": {
+        "comment1ToResponse1ForQ1": {
+          "id": "",
+          "feedbackResponse": {
+            "id": "00000000-0000-4000-8000-000000000901",
+            "answer": {
+              "questionType": "TEXT",
+              "answer": "Student 1 self feedback."
+            }
+          },
+          "giver": "instr1@teammates.tmt",
+          "giverType": "INSTRUCTORS",
+          "giverSection": {
+            "id": "00000000-0000-4000-8000-000000000201"
+          },
+          "recipientSection": {
+            "id": "00000000-0000-4000-8000-000000000201"
+          },
+          "commentText": "Instructor 1 comment to student 1 self feedback",
+          "isVisibilityFollowingFeedbackQuestion": false,
+          "isCommentFromFeedbackParticipant": false,
+          "showCommentTo": [],
+          "showGiverNameTo": [],
+          "lastEditorEmail": "instr1@teammates.tmt"
+        },
+        "comment2ToResponse1ForQ1": {
+          "id": "",
+          "feedbackResponse": {
+            "id": "00000000-0000-4000-8000-000000000901",
+            "answer": {
+              "questionType": "TEXT",
+              "answer": "Student 1 self feedback."
+            }
+          },
+          "giver": "student1@teammates.tmt",
+          "giverType": "STUDENTS",
+          "giverSection": {
+            "id": "00000000-0000-4000-8000-000000000201"
+          },
+          "recipientSection": {
+            "id": "00000000-0000-4000-8000-000000000201"
+          },
+          "commentText": "Student 1 comment to student 1 self feedback",
+          "isVisibilityFollowingFeedbackQuestion": false,
+          "isCommentFromFeedbackParticipant": false,
+          "showCommentTo": [],
+          "showGiverNameTo": [],
+          "lastEditorEmail": "student1@teammates.tmt"
+        },
+        "comment2ToResponse2ForQ1": {
+          "id": "",
+          "feedbackResponse": {
+            "id": "00000000-0000-4000-8000-000000000902",
+            "answer": {
+              "questionType": "TEXT",
+              "answer": "Student 2 self feedback."
+            }
+          },
+          "giver": "instr2@teammates.tmt",
+          "giverType": "INSTRUCTORS",
+          "giverSection": {
+            "id": "00000000-0000-4000-8000-000000000201"
+          },
+          "recipientSection": {
+            "id": "00000000-0000-4000-8000-000000000201"
+          },
+          "commentText": "Instructor 2 comment to student 2 self feedback",
+          "isVisibilityFollowingFeedbackQuestion": false,
+          "isCommentFromFeedbackParticipant": false,
+          "showCommentTo": [],
+          "showGiverNameTo": [],
+          "lastEditorEmail": "instr2@teammates.tmt"
+        },
+        "comment1ToResponse1ForQ2s": {
+          "id": "",
+          "feedbackResponse": {
+            "id": "00000000-0000-4000-8000-000000000903",
+            "answer": {
+              "questionType": "TEXT",
+              "answer": "Student 2 self feedback."
+            }
+          },
+          "giver": "instr2@teammates.tmt",
+          "giverType": "INSTRUCTORS",
+          "giverSection": {
+            "id": "00000000-0000-4000-8000-000000000201"
+          },
+          "recipientSection": {
+            "id": "00000000-0000-4000-8000-000000000201"
+          },
+          "commentText": "Instructor 2 comment to student 2 self feedback",
+          "isVisibilityFollowingFeedbackQuestion": false,
+          "isCommentFromFeedbackParticipant": false,
+          "showCommentTo": [],
+          "showGiverNameTo": [],
+          "lastEditorEmail": "instr2@teammates.tmt"
+        },
+        "comment1ToResponse1ForQ3": {
+          "id": "",
+          "feedbackResponse": {
+            "id": "00000000-0000-4000-8000-000000000905",
+            "answer": {
+              "questionType": "TEXT",
+              "answer": "The class is great."
+            }
+          },
+          "giver": "instr1@teammates.tmt",
+          "giverType": "INSTRUCTORS",
+          "giverSection": {
+            "id": "00000000-0000-4000-8000-000000000201"
+          },
+          "recipientSection": {
+            "id": "00000000-0000-4000-8000-000000000201"
+          },
+          "commentText": "Instructor 1 comment to student 1 self feedback",
+          "isVisibilityFollowingFeedbackQuestion": false,
+          "isCommentFromFeedbackParticipant": false,
+          "showCommentTo": [],
+          "showGiverNameTo": [],
+          "lastEditorEmail": "instr1@teammates.tmt"
+        }
+      },
     };
 
-    const courses: Node[] = this.generateNodes(data.courses, 'blue', 'institute', 11);
-    const sessions: Node[] = this.generateNodes(data.feedbackSessions, 'green', 'course', 10);
-    const questions: Node[] = this.generateNodes(data.feedbackQuestions, 'black', 'feedbackSession', 9);
+    const courses: Node[] = this.generateNodes(data.courses, 'blue', [], 11);
+    const sessions: Node[] = this.generateNodes(data.feedbackSessions, 'green', ['course'], 10);
+    const questions: Node[] = this.generateNodes(data.feedbackQuestions, 'black', ['feedbackSession'], 9);
+    const responses: Node[] = this.generateNodes(data.feedbackResponses, 'yellow', ['feedbackQuestion'], 9);
+    const comments: Node[] = this.generateNodes(data.feedbackResponseComments, 'grey', ['feedbackResponse', 'giverSection', 'recipientSection'], 9);
+    const sections: Node[] = this.generateNodes(data.sections, 'red', ['course'], 9);
 
-    this.nodes = [...courses, ...sessions, ...questions];
+    this.nodes = [...courses, ...sessions, ...questions, ...responses, ...comments, ...sections];
+    const idToNodeMap: { [id: string]: Node } = {};
+    this.nodes.forEach(node => {
+      idToNodeMap[node.id] = node;
+    });
 
-    const sessionToQuestionLinks = this.generateLinks(sessions, courses);
-    const questionsToSessionLinks = this.generateLinks(questions, sessions);
-    this.links = [...sessionToQuestionLinks, ...questionsToSessionLinks];
+    const sessionToQuestionLinks = this.generateLinks(sessions, idToNodeMap);
+    const questionsToSessionLinks = this.generateLinks(questions, idToNodeMap);
+    const responseToQuestionLinks = this.generateLinks(responses, idToNodeMap);
+    const commentsToResponseLinks = this.generateLinks(comments, idToNodeMap);
+    const sectionsToCourseLinks = this.generateLinks(sections, idToNodeMap);
+    this.links = [...sessionToQuestionLinks, ...questionsToSessionLinks, ...responseToQuestionLinks, ...commentsToResponseLinks, ...sectionsToCourseLinks];
   }
 
   ngOnChanges(): void {
@@ -440,22 +789,80 @@ export class DatabundlePageComponent implements OnInit, OnChanges {
   generateNodes<T extends DataBundleEntity>(
     entities: { [key: string]: T },
     color: string,
-    relationIdKey: keyof T,
+    relationIdKeys: (keyof T)[],
     size?: number
   ): Node[] {
-    return Object.keys(entities).map((entityKey) => ({
-      id: entities[entityKey].id,
-      name: entityKey,
-      color,
-      size: size || 11,
-      relationId: entities[entityKey][relationIdKey].id
-    }));
+    return Object.keys(entities).map((entityKey) => {
+      const entity = entities[entityKey];
+      const relationIds = [];
+
+      for (const relationIdKey of relationIdKeys) {
+        if (entity[relationIdKey].id) {
+          relationIds.push(entity[relationIdKey].id);
+        }
+      }
+
+      return {
+        id: entity.id ?? "",
+        name: entityKey,
+        data: { ...entity },
+        color,
+        size: size || 11,
+        relationIds: relationIds
+      }
+    }
+    );
   }
 
-  generateLinks(sources: Node[], targets: Node[]) {
-    return sources.map(source => ({
-      source: source,
-      target: targets.find(target => target.id === source.relationId)!
-    }));
+  generateLinks(sources: Node[], idToNodeMap: { [id: string]: Node }) {
+    const links: Link[] = [];
+
+    sources.forEach(source => {
+      const targetIds = source.relationIds;
+      if (!targetIds) {
+        return;
+      }
+      for (const targetId of targetIds) {
+        const targetNode = idToNodeMap[targetId];
+        if (targetNode) {
+          links.push({
+            source: source,
+            target: targetNode,
+          });
+        }
+      }
+    });
+  
+    return links;
+  }
+
+  openModal(nodeData: Node) {
+    this.simpleModalService.openInformationModal(nodeData.name, SimpleModalType.INFO, this.formatObject(nodeData.data));
+  }
+
+  formatObject(obj: any, indent: number = 0): string {
+    const indentString = ' '.repeat(indent * 2);
+    const keys = Object.keys(obj);
+
+    return keys.map(key => {
+      const value = obj[key];
+      const formattedValue = typeof value === 'object'
+        ? this.formatObject(value, indent + 1)
+        : JSON.stringify(value);
+
+      return `${indentString}<strong>${key}</strong>: ${formattedValue}`;
+    }).join(',<br>');
+  }
+
+  linkVisibility: { [key: string]: boolean } = {
+    sessionToQuestion: true,
+    questionToSession: true,
+    responseToQuestion: true,
+    commentsToResponse: true,
+    sectionsToCourse: true
+  };
+
+  toggleLinkVisibility(linkType: string) {
+    this.linkVisibility[linkType] = !this.linkVisibility[linkType];
   }
 }

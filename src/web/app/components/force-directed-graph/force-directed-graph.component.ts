@@ -1,4 +1,4 @@
-import { Component, ElementRef, Input, OnInit } from '@angular/core';
+import { Component, ElementRef, EventEmitter, Input, OnInit, Output } from '@angular/core';
 import { D3DragEvent, drag, forceCenter, forceCollide, forceLink, forceManyBody, forceSimulation, select, Selection, Simulation, zoom } from 'd3';
 import { Node, Link } from './force-directed-graph.model';
 
@@ -9,6 +9,7 @@ import { Node, Link } from './force-directed-graph.model';
 export class ForceDirectedGraphComponent implements OnInit {
   @Input() nodes: Node[] = [];
   @Input() links: Link[] = [];
+  @Output() onClick: EventEmitter<Node> = new EventEmitter();
 
   private hostElement;
   private simulation: Simulation<Node, Link> = this.createSimulation(this.nodes, this.links);
@@ -77,10 +78,8 @@ export class ForceDirectedGraphComponent implements OnInit {
       .on("drag", this.dragged)
       .on("end", this.dragended));
 
-    this.graphNodes.on("click", (node: any, bla: any) => {
-      console.log(node);
-      console.log(bla);
-      console.log('click');
+    this.graphNodes.on("click", (_: any, node: Node) => {
+      this.onClick.emit(node);
     })
   }
 

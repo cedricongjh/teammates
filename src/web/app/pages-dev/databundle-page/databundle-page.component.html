@@ -1,2 +1,2 @@
 <h2>Data bundle graph</h2>
-<tm-force-directed-graph [nodes]="this.nodes" [links]="this.links"></tm-force-directed-graph>
+<tm-force-directed-graph [nodes]="this.nodes" [links]="this.links" (onClick)="this.openModal($event)"></tm-force-directed-graph>
