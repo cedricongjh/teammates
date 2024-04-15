@@ -86,6 +86,20 @@ export class ForceDirectedGraphComponent implements OnInit {
     this.graphNodes.on("click", (_: any, node: Node) => {
       this.onClick.emit(node);
     })
+
+    this.graphNodes.on('mouseover', (_, node) => {
+      this.graphLinks.style('stroke-width', function(l) {
+        if (node === l.source || node === l.target)
+          return 8;
+        else
+          return 2;
+        });
+    });
+    
+    // Set the stroke width back to normal when mouse leaves the node.
+    this.graphNodes.on('mouseout', () => {
+      this.graphLinks.style('stroke-width', 2);
+    });
   }
 
   private setUpSimulationUpdates() {

@@ -1,2 +1,11 @@
 <h2>Data bundle graph</h2>
 <tm-force-directed-graph [nodes]="this.nodes" [links]="this.links" (onClick)="this.openModal($event)"></tm-force-directed-graph>
+
+<div class="col-12">
+  <label>
+    <input type="checkbox"
+           [checked]="linkVisibilityModel.feedbackResponseCommentTosection"
+           (click)="triggerModelChange('feedbackResponseCommentTosection', $event.target.checked)" />
+    Feedback Response To Section
+  </label>
+</div>

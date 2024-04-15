@@ -42,3 +42,39 @@ export const EMPTY_DATA_BUNDLE: DataBundle = {
   feedbackResponseComments: {},
   sections: {}
 }
+
+export interface LinkVisibilityModel {
+  feedbackSessionTocourse: boolean;
+  feedbackQuestionTofeedbackSession: boolean;
+  feedbackResponseTofeedbackQuestion: boolean;
+  feedbackResponseCommentTofeedbackResponse: boolean;
+  feedbackResponseCommentTosection: boolean;
+  sectionTocourse: boolean;
+}
+
+export const DEFAULT_LINK_VISIBLITY : LinkVisibilityModel = {
+  feedbackSessionTocourse: true,
+  feedbackQuestionTofeedbackSession: true,
+  feedbackResponseTofeedbackQuestion: true,
+  feedbackResponseCommentTofeedbackResponse: true,
+  feedbackResponseCommentTosection: true,
+  sectionTocourse: true
+}
+
+export interface LabelVisbilityModel {
+  course: boolean;
+  feedbackSession: boolean;
+  feedbackQuestion: boolean;
+  feedbackResponse: boolean;
+  feedbackResponseComment: boolean;
+  section: boolean;
+}
+
+export const DEFAULT_LABEL_VISBILITY: LabelVisbilityModel = {
+  course: true,
+  feedbackSession: true,
+  feedbackQuestion: true,
+  feedbackResponse: true,
+  feedbackResponseComment: true,
+  section: true
+}

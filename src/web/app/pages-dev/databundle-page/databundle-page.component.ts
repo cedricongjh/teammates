@@ -9,13 +9,6 @@ import { DataBundle } from '../../components/databundle-graph/databundle-graph.m
 })
 export class DatabundlePageComponent {
 
-  linkVisibility: { [key: string]: boolean } = {
-    sessionToQuestion: true,
-    questionToSession: true,
-    responseToQuestion: true,
-    commentsToResponse: true,
-    sectionsToCourse: true
-  };
   dataBundle: DataBundle = databundle;
 
   constructor() {}

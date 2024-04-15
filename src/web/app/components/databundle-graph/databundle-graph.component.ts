@@ -2,7 +2,7 @@ import { Component, Input, OnInit } from '@angular/core';
 import { Link, Node } from '../../components/force-directed-graph/force-directed-graph.model';
 import { SimpleModalService } from '../../../services/simple-modal.service';
 import { SimpleModalType } from '../simple-modal/simple-modal-type';
-import { DataBundle, DataBundleEntity, EMPTY_DATA_BUNDLE } from './databundle-graph.model';
+import { DEFAULT_LINK_VISIBLITY, DEFAULT_LABEL_VISBILITY, DataBundle, DataBundleEntity, EMPTY_DATA_BUNDLE, LabelVisbilityModel, LinkVisibilityModel } from './databundle-graph.model';
 
 @Component({
   selector: 'tm-databundle-graph',
@@ -14,6 +14,8 @@ export class DatabundleGraphComponent implements OnInit {
   nodes: Node[] = [];
   links: Link[] = [];
   @Input() dataBundle: DataBundle = EMPTY_DATA_BUNDLE;
+  labelVisbilityModel: LabelVisbilityModel = DEFAULT_LABEL_VISBILITY;
+  linkVisibilityModel: LinkVisibilityModel = DEFAULT_LINK_VISIBLITY;
 
   constructor(private simpleModalService: SimpleModalService) {}
 
@@ -24,12 +26,12 @@ export class DatabundleGraphComponent implements OnInit {
   generateNodesAndLinks() {
     const data: DataBundle = this.dataBundle;
 
-    const courses: Node[] = this.generateNodes(data.courses, 'blue', [], 11);
-    const sessions: Node[] = this.generateNodes(data.feedbackSessions, 'green', ['course'], 10);
-    const questions: Node[] = this.generateNodes(data.feedbackQuestions, 'black', ['feedbackSession'], 9);
-    const responses: Node[] = this.generateNodes(data.feedbackResponses, 'yellow', ['feedbackQuestion'], 9);
-    const comments: Node[] = this.generateNodes(data.feedbackResponseComments, 'grey', ['feedbackResponse', 'giverSection', 'recipientSection'], 9);
-    const sections: Node[] = this.generateNodes(data.sections, 'red', ['course'], 9);
+    const courses: Node[] = this.generateNodes(data.courses, 'course', 'blue', [], 11);
+    const sessions: Node[] = this.generateNodes(data.feedbackSessions, 'feedbackSession', 'green', ['course'], 10);
+    const questions: Node[] = this.generateNodes(data.feedbackQuestions, 'feedbackQuestion', 'black', ['feedbackSession'], 9);
+    const responses: Node[] = this.generateNodes(data.feedbackResponses, 'feedbackResponse', 'yellow', ['feedbackQuestion'], 9);
+    const comments: Node[] = this.generateNodes(data.feedbackResponseComments, 'feedbackResponseComment', 'grey', ['feedbackResponse', 'giverSection', 'recipientSection'], 9);
+    const sections: Node[] = this.generateNodes(data.sections, 'section', 'red', ['course'], 9);
 
     this.nodes = [...courses, ...sessions, ...questions, ...responses, ...comments, ...sections];
     const idToNodeMap: { [id: string]: Node } = {};
@@ -37,16 +39,18 @@ export class DatabundleGraphComponent implements OnInit {
       idToNodeMap[node.id] = node;
     });
 
-    const sessionToQuestionLinks = this.generateLinks(sessions, idToNodeMap);
-    const questionsToSessionLinks = this.generateLinks(questions, idToNodeMap);
-    const responseToQuestionLinks = this.generateLinks(responses, idToNodeMap);
-    const commentsToResponseLinks = this.generateLinks(comments, idToNodeMap);
-    const sectionsToCourseLinks = this.generateLinks(sections, idToNodeMap);
-    this.links = [...sessionToQuestionLinks, ...questionsToSessionLinks, ...responseToQuestionLinks, ...commentsToResponseLinks, ...sectionsToCourseLinks];
+    const sessionLinks = this.generateLinks(sessions, idToNodeMap);
+    const questionsLinks = this.generateLinks(questions, idToNodeMap);
+    const responseLinks = this.generateLinks(responses, idToNodeMap);
+    const commentsLinks = this.generateLinks(comments, idToNodeMap);
+    const sectionsLinks = this.generateLinks(sections, idToNodeMap);
+    this.links = [...sessionLinks, ...questionsLinks, ...responseLinks, ...commentsLinks, ...sectionsLinks];
+    console.log(this.links);
   }
 
   generateNodes<T extends DataBundleEntity>(
     entities: { [key: string]: T },
+    type: string,
     color: string,
     relationIdKeys: (keyof T)[],
     size?: number
@@ -63,8 +67,8 @@ export class DatabundleGraphComponent implements OnInit {
 
       return {
         id: entity.id ?? "",
-        name: entityKey,
-        data: { ...entity },
+        label: entityKey,
+        data: { type, ...entity },
         color,
         size: size || 11,
         relationIds: relationIds
@@ -81,14 +85,32 @@ export class DatabundleGraphComponent implements OnInit {
       if (!targetIds) {
         return;
       }
+
       for (const targetId of targetIds) {
         const targetNode = idToNodeMap[targetId];
-        if (targetNode) {
-          links.push({
-            source: source,
-            target: targetNode,
-          });
+        if (!targetNode) {
+          return;
         }
+
+        const sourceType = source.data['type'];
+        if (!sourceType) {
+          return;
+        }
+
+        const targetType = targetNode.data['type'];
+        if (!targetType) {
+          return;
+        }
+
+        const visibilityKey = `${sourceType}To${targetType}` as keyof LinkVisibilityModel;;
+        if (!this.linkVisibilityModel[visibilityKey]) {
+          return;
+        }
+
+        links.push({
+          source: source,
+          target: targetNode,
+        });
       }
     });
   
@@ -96,7 +118,7 @@ export class DatabundleGraphComponent implements OnInit {
   }
 
   openModal(nodeData: Node) {
-    this.simpleModalService.openInformationModal(nodeData.name, SimpleModalType.INFO, this.formatObject(nodeData.data));
+    this.simpleModalService.openInformationModal(nodeData.label, SimpleModalType.INFO, this.formatObject(nodeData.data));
   }
 
   formatObject(obj: any, indent: number = 0): string {
@@ -111,5 +133,13 @@ export class DatabundleGraphComponent implements OnInit {
 
       return `${indentString}<strong>${key}</strong>: ${formattedValue}`;
     }).join(',<br>');
+  }
+
+  triggerModelChange(field: string, data: any): void {
+    this.linkVisibilityModel = {
+      ...this.linkVisibilityModel,
+      [field]: data,
+    };
+    this.generateNodesAndLinks();
   }
 }
