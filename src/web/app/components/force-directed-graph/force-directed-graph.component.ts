@@ -1,4 +1,4 @@
-import { Component, ElementRef, EventEmitter, Input, OnInit, Output } from '@angular/core';
+import { Component, ElementRef, EventEmitter, Input, OnChanges, Output } from '@angular/core';
 import { D3DragEvent, drag, forceCollide, forceLink, forceManyBody, forceSimulation, forceX, forceY, select, Selection, Simulation, zoom } from 'd3';
 import { Node, Link } from './force-directed-graph.model';
 
@@ -6,7 +6,7 @@ import { Node, Link } from './force-directed-graph.model';
   selector: 'tm-force-directed-graph',
   templateUrl: './force-directed-graph.component.html',
 })
-export class ForceDirectedGraphComponent implements OnInit {
+export class ForceDirectedGraphComponent implements OnChanges {
   @Input() nodes: Node[] = [];
   @Input() links: Link[] = [];
   @Output() onClick: EventEmitter<Node> = new EventEmitter();
@@ -24,7 +24,12 @@ export class ForceDirectedGraphComponent implements OnInit {
     this.graphLinks = this.svg.selectAll('line');
   }
 
-  ngOnInit() {
+  ngOnChanges() {
+    if (this.svg) {
+      select('svg').remove();
+    }
+
+    this.svg = this.createSvgContainer();
     this.simulation = this.createSimulation(this.nodes, this.links);
     this.setUpZoom();
     this.setUpLinks();
