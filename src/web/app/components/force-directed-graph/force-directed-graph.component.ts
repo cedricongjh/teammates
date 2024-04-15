@@ -49,7 +49,7 @@ export class ForceDirectedGraphComponent implements OnInit {
       .force('charge', forceManyBody().strength(-500))
       .force("x", forceX())
       .force("y", forceY())
-      .force('collision', forceCollide().radius(20).strength(0.8));
+      .force('collision', forceCollide().radius(50).strength(0.8));
   }
 
   private setUpLinks() {
@@ -73,8 +73,11 @@ export class ForceDirectedGraphComponent implements OnInit {
       .style('fill', d => d.color ?? 'red');
 
     this.graphNodes.append('text')
-      .attr("x", 12)
-      .text(d => d.label);
+      .attr('text-anchor', 'middle')
+      .attr('dominant-baseline', 'middle')
+      .attr('y', -10)
+      .text(d => d.label)
+      .style('fill', 'black')
 
     this.graphNodes.call(drag<SVGGElement, Node>().on("start", this.dragstarted)
       .on("drag", this.dragged)
