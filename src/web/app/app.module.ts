@@ -30,7 +30,7 @@ import { PublicPageComponent } from './public-page.component';
 import { environment } from '../environments/environment';
 import { Intent } from '../types/api-request';
 import { DatabundlePageComponent } from './pages-dev/databundle-page/databundle-page.component';
-import { ForceDirectedGraphModule } from './components/force-directed-graph/force-directed-graph.module';
+import { DatabundleGraphModule } from "./components/databundle-graph/databundle-graph.module";
 
 const customUrlSerializer: CustomUrlSerializer = new CustomUrlSerializer();
 const customUrlSerializerProvider: Provider = {
@@ -188,7 +188,7 @@ if (environment.maintenance) {
         ? AngularFireModule.initializeApp(environment.firebaseConfig) : [],
     environment.allowFirebaseLogin && environment.firebaseConfig?.projectId
         ? AngularFireAuthModule : [],
-    ForceDirectedGraphModule
+    DatabundleGraphModule
   ],
   providers: [customUrlSerializerProvider],
   bootstrap: [AppComponent],
