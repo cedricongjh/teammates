@@ -1,5 +1,5 @@
 import { Component, ElementRef, EventEmitter, Input, OnInit, Output } from '@angular/core';
-import { D3DragEvent, drag, forceCenter, forceCollide, forceLink, forceManyBody, forceSimulation, select, Selection, Simulation, zoom } from 'd3';
+import { D3DragEvent, drag, forceCollide, forceLink, forceManyBody, forceSimulation, forceX, forceY, select, Selection, Simulation, zoom } from 'd3';
 import { Node, Link } from './force-directed-graph.model';
 
 @Component({
@@ -36,6 +36,7 @@ export class ForceDirectedGraphComponent implements OnInit {
     return select(this.hostElement).append('svg')
       .attr('width', 1000)
       .attr('height', 1000)
+      .attr('viewBox', [-1000/2, -1000/2, 1000, 1000])
       .call(zoom<SVGSVGElement, any>().on("zoom", (event: any) => {
         this.svg.attr("transform", event.transform)
         }))
@@ -45,8 +46,9 @@ export class ForceDirectedGraphComponent implements OnInit {
   private createSimulation(nodes: Node[], links: Link[]) {
     return forceSimulation(nodes)
       .force('link', forceLink(links).id((d: any) => d.id))
-      .force('charge', forceManyBody().strength(-100))
-      .force('center', forceCenter(500, 500))
+      .force('charge', forceManyBody().strength(-500))
+      .force("x", forceX())
+      .force("y", forceY())
       .force('collision', forceCollide().radius(20).strength(0.8));
   }
 
@@ -72,7 +74,7 @@ export class ForceDirectedGraphComponent implements OnInit {
 
     this.graphNodes.append('text')
       .attr("x", 12)
-      .text(d => d.name);
+      .text(d => d.label);
 
     this.graphNodes.call(drag<SVGGElement, Node>().on("start", this.dragstarted)
       .on("drag", this.dragged)
@@ -95,7 +97,6 @@ export class ForceDirectedGraphComponent implements OnInit {
 
   private setUpZoom = () => {
     const handleZoom = (e: any) => {
-      console.log('handle zoom')
       this.svg.attr('transform', e.transform)
     }
 

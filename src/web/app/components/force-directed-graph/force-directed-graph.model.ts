@@ -2,7 +2,7 @@ import { SimulationNodeDatum, SimulationLinkDatum } from "d3";
 
 export interface Node extends SimulationNodeDatum {
   id: string;
-  name: string;
+  label: string;
   data: { [key: string]: any };
   relationIds?: string[];
   size?: number;
