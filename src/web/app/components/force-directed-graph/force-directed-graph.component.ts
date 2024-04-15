@@ -75,7 +75,7 @@ export class ForceDirectedGraphComponent implements OnInit {
     this.graphNodes.append('text')
       .attr('text-anchor', 'middle')
       .attr('dominant-baseline', 'middle')
-      .attr('y', -10)
+      .attr('y', -15)
       .text(d => d.label)
       .style('fill', 'black')
 
