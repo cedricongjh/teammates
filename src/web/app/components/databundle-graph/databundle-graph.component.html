@@ -1,11 +1,58 @@
-<h2>Data bundle graph</h2>
-<tm-force-directed-graph [nodes]="this.nodes" [links]="this.links" (onClick)="this.openModal($event)"></tm-force-directed-graph>
-
-<div class="col-12">
-  <label>
-    <input type="checkbox"
-           [checked]="linkVisibilityModel.feedbackResponseCommentTosection"
-           (click)="triggerModelChange('feedbackResponseCommentTosection', $event.target.checked)" />
-    Feedback Response Comment To Section
-  </label>
+<div class="container">
+  <div class="row mt-3">
+    <div class="col">
+      <h2>Data bundle graph</h2>
+      <div class="graph-container">
+        <tm-force-directed-graph [nodes]="this.nodes" [links]="this.links" (onClick)="this.openModal($event)"></tm-force-directed-graph>
+      </div>
+    </div>
+    <div class="col">
+      <div>
+        <h3>Link visibility controls</h3>
+        <div>
+          <label>
+            <input type="checkbox"
+                  [checked]="linkVisibilityModel.feedbackResponseCommentTosection"
+                  (click)="triggerModelChange('feedbackResponseCommentTosection', $event.target.checked)" />
+            Feedback Response Comment To Section
+          </label>
+        </div>
+        <div>
+          <label>
+            <input type="checkbox"
+                  [checked]="linkVisibilityModel.sectionTocourse"
+                  (click)="triggerModelChange('sectionTocourse', $event.target.checked)" />
+            Course To Section
+          </label>
+        </div>
+      </div>
+      <div>
+        <h3>Legend</h3>
+        <div class="legend-item">
+          <span class="legend-circle" style="background-color: blue;"></span>
+          <span class="legend-text">Course</span>
+        </div>
+        <div class="legend-item">
+          <span class="legend-circle" style="background-color: green;"></span>
+          <span class="legend-text">Feedback Session</span>
+        </div>
+        <div class="legend-item">
+          <span class="legend-circle" style="background-color: black;"></span>
+          <span class="legend-text">Feedback Question</span>
+        </div>
+        <div class="legend-item">
+          <span class="legend-circle" style="background-color: yellow;"></span>
+          <span class="legend-text">Feedback Response</span>
+        </div>
+        <div class="legend-item">
+          <span class="legend-circle" style="background-color: grey;"></span>
+          <span class="legend-text">Feedback Response Comment</span>
+        </div>
+        <div class="legend-item">
+          <span class="legend-circle" style="background-color: red;"></span>
+          <span class="legend-text">Section</span>
+        </div>
+      </div>
+    </div>
+  </div>
 </div>

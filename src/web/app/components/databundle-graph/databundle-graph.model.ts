@@ -57,7 +57,7 @@ export const DEFAULT_LINK_VISIBLITY : LinkVisibilityModel = {
   feedbackQuestionTofeedbackSession: true,
   feedbackResponseTofeedbackQuestion: true,
   feedbackResponseCommentTofeedbackResponse: true,
-  feedbackResponseCommentTosection: true,
+  feedbackResponseCommentTosection: false,
   sectionTocourse: true
 }
 
